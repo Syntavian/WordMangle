@@ -1,7 +1,23 @@
-SEGMENT_LENGTH = 3
-OVERLAP_LENGTH = 2
+SEGMENT_LENGTH = 4
+OVERLAP_LENGTH = 3
+RESULT_MIN_LENGTH = 7
+RESULT_MAX_LENGTH = 9
 
-inputs = ["doctor", "acrobat", "caravan", "police", "avalanche", "violence"]
+inputs = [
+    "doctor",
+    "acrobat",
+    "caravan",
+    "police",
+    "avalanche",
+    "violence",
+    "expedite",
+    "verify",
+    "terrify",
+    "syntax",
+    "balance",
+    "opulence",
+    "consequence",
+]
 
 
 def run():
@@ -11,18 +27,36 @@ def run():
 
     segments = generate_segments(inputs)
 
-    print(segments)
-
     segment_map = generate_segment_map(segments)
 
-    print(segment_map)
+    results = generate_results(segments, segment_map)
 
-    # TODO: Generate outputs
+    for result in sorted(results):
+        print(result)
+
+
+def generate_results(segments, segment_map):
+    working_queue = list(segments)
+    results = set()
+
+    while len(working_queue):
+        working_item = working_queue.pop(0)
+        item_end = working_item[-OVERLAP_LENGTH:]
+        if item_end in segment_map:
+            for next_part in segment_map[item_end]:
+                result = f"{working_item}{next_part[OVERLAP_LENGTH:]}"
+                if (
+                    RESULT_MIN_LENGTH <= len(result) <= RESULT_MAX_LENGTH
+                    and result not in inputs
+                ):
+                    results.add(result)
+                if len(result) < RESULT_MAX_LENGTH:
+                    working_queue.append(result)
+    return results
 
 
 def generate_segment_map(segments):
     segment_map: dict[str, list[str]] = {}
-
     for segment in segments:
         if segment[:OVERLAP_LENGTH] in segment_map:
             segment_map[segment[:OVERLAP_LENGTH]].append(segment)
