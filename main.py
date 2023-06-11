@@ -3,39 +3,31 @@ OVERLAP_LENGTH = 3
 RESULT_MIN_LENGTH = 7
 RESULT_MAX_LENGTH = 9
 
-inputs = [
-    "doctor",
-    "acrobat",
-    "caravan",
-    "police",
-    "avalanche",
-    "violence",
-    "expedite",
-    "verify",
-    "terrify",
-    "syntax",
-    "balance",
-    "opulence",
-    "consequence",
-]
-
 
 def run():
     # TODO: REPL
 
-    # TODO: Validate inputs
-
+    inputs = get_inputs()
     segments = generate_segments(inputs)
-
     segment_map = generate_segment_map(segments)
-
-    results = generate_results(segments, segment_map)
+    results = generate_results(inputs, segments, segment_map)
 
     for result in sorted(results):
         print(result)
 
 
-def generate_results(segments, segment_map):
+def get_inputs():
+    inputs = []
+    with open("inputs.txt") as inputs_file:
+        file_lines = inputs_file.readlines()
+        for line in file_lines:
+            formatted_line = line.strip()
+            if len(formatted_line):
+                inputs.append(formatted_line)
+    return inputs
+
+
+def generate_results(inputs, segments, segment_map):
     working_queue = list(segments)
     results = set()
 
