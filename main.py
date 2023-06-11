@@ -12,8 +12,12 @@ def run():
     segment_map = generate_segment_map(segments)
     results = generate_results(inputs, segments, segment_map)
 
-    for result in sorted(results):
-        print(result)
+    write_outputs(results)
+
+
+def write_outputs(results):
+    with open("outputs.txt", "w") as outputs_file:
+        outputs_file.writelines([f"{word}\n" for word in sorted(results)])
 
 
 def get_inputs():
