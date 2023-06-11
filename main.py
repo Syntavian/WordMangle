@@ -1,5 +1,5 @@
-SEGMENT_LENGTH = 4
-OVERLAP_LENGTH = 3
+SEGMENT_LENGTH = 3
+OVERLAP_LENGTH = 2
 RESULT_MIN_LENGTH = 7
 RESULT_MAX_LENGTH = 9
 
@@ -8,9 +8,9 @@ def run():
     # TODO: REPL
 
     inputs = get_inputs()
-    segments = generate_segments(inputs)
+    segments, start_segments, end_segments = generate_segments(inputs)
     segment_map = generate_segment_map(segments)
-    results = generate_results(inputs, segments, segment_map)
+    results = generate_results(inputs, start_segments, end_segments, segment_map)
 
     write_outputs(results)
 
@@ -22,55 +22,73 @@ def write_outputs(results):
 
 def get_inputs():
     inputs = []
+
     with open("inputs.txt") as inputs_file:
         file_lines = inputs_file.readlines()
+
         for line in file_lines:
             formatted_line = line.strip()
+
             if len(formatted_line):
                 inputs.append(formatted_line)
+
     return inputs
 
 
-def generate_results(inputs, segments, segment_map):
-    working_queue = list(segments)
+def generate_results(_inputs, _start_segments, _end_segments, _segment_map):
+    working_queue = list(_start_segments)
     results = set()
 
     while len(working_queue):
         working_item = working_queue.pop(0)
         item_end = working_item[-OVERLAP_LENGTH:]
-        if item_end in segment_map:
-            for next_part in segment_map[item_end]:
+
+        if item_end in _segment_map:
+            for next_part in _segment_map[item_end]:
                 result = f"{working_item}{next_part[OVERLAP_LENGTH:]}"
+
                 if (
                     RESULT_MIN_LENGTH <= len(result) <= RESULT_MAX_LENGTH
-                    and result not in inputs
+                    and result not in _inputs
+                    and result[-SEGMENT_LENGTH:] in _end_segments
                 ):
                     results.add(result)
+
                 if len(result) < RESULT_MAX_LENGTH:
                     working_queue.append(result)
+
     return results
 
 
-def generate_segment_map(segments):
+def generate_segment_map(_segments):
     segment_map: dict[str, list[str]] = {}
-    for segment in segments:
+
+    for segment in _segments:
         if segment[:OVERLAP_LENGTH] in segment_map:
             segment_map[segment[:OVERLAP_LENGTH]].append(segment)
         else:
             segment_map[segment[:OVERLAP_LENGTH]] = [segment]
+
     return segment_map
 
 
 def generate_segments(_inputs):
     segments = set()
+    start_segments = set()
+    end_segments = set()
     for word in _inputs:
         for character_index in range(len(word)):
             segmentation_start = SEGMENT_LENGTH - 1
             if character_index >= segmentation_start:
                 segment_start = character_index - segmentation_start
                 segment_end = character_index + 1
-                segments.add(word[segment_start:segment_end])
-    return segments
+                segment = word[segment_start:segment_end]
+                segments.add(segment)
+                if character_index == segmentation_start:
+                    start_segments.add(segment)
+                if character_index == len(word) - 1:
+                    end_segments.add(segment)
+    return segments, start_segments, end_segments
 
 
 if __name__ == "__main__":
