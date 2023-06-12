@@ -10,6 +10,7 @@ COMMANDS = {
     "add": lambda *args: add_words(*args),
     "exit": lambda *_: exit(),
     "regenerate": lambda *args: generate(*args),
+    "remove": lambda *args: remove_words(*args),
 }
 
 
@@ -28,13 +29,23 @@ def run():
             print()
 
 
-def add_words(_inputs: list[str], *_args):
-    _inputs.extend([word for word in _args if word not in _inputs])
+def add_words(_inputs: set[str], *_args):
+    _inputs.update(_args)
 
+    write_inputs(_inputs)
+    generate(_inputs)
+
+
+def remove_words(_inputs: set[str], *_args):
+    _inputs.difference_update(_args)
+
+    write_inputs(_inputs)
+    generate(_inputs)
+
+
+def write_inputs(_inputs):
     with open("inputs.txt", "w") as inputs_file:
         inputs_file.writelines([f"{word}\n" for word in sorted(_inputs)])
-
-    generate(_inputs)
 
 
 def generate(_inputs):
@@ -58,7 +69,7 @@ def write_outputs(_results):
 
 
 def get_inputs():
-    inputs = []
+    inputs = set()
 
     with open("inputs.txt") as inputs_file:
         file_lines = inputs_file.readlines()
@@ -67,7 +78,7 @@ def get_inputs():
             formatted_line = line.strip()
 
             if len(formatted_line):
-                inputs.append(formatted_line)
+                inputs.add(formatted_line)
 
     return inputs
 
