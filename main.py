@@ -32,8 +32,15 @@ def generate():
 
 
 def write_outputs(results):
+    sorted_results = sorted(results)
+
+    print()
+
+    for i in range(0, len(sorted_results), 5):
+        print(*sorted_results[i : i + 5])
+
     with open("outputs.txt", "w") as outputs_file:
-        outputs_file.writelines([f"{word}\n" for word in sorted(results)])
+        outputs_file.writelines([f"{word}\n" for word in sorted_results])
 
 
 def get_inputs():
@@ -92,18 +99,23 @@ def generate_segments(_inputs):
     segments = set()
     start_segments = set()
     end_segments = set()
+
     for word in _inputs:
         for character_index in range(len(word)):
             segmentation_start = SEGMENT_LENGTH - 1
+
             if character_index >= segmentation_start:
                 segment_start = character_index - segmentation_start
                 segment_end = character_index + 1
                 segment = word[segment_start:segment_end]
                 segments.add(segment)
+
                 if character_index == segmentation_start:
                     start_segments.add(segment)
+
                 if character_index == len(word) - 1:
                     end_segments.add(segment)
+
     return segments, start_segments, end_segments
 
 
