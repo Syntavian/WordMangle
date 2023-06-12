@@ -1,12 +1,28 @@
+import re
+
 SEGMENT_LENGTH = 3
 OVERLAP_LENGTH = 2
 RESULT_MIN_LENGTH = 7
 RESULT_MAX_LENGTH = 9
 
 
-def run():
-    # TODO: REPL
+COMMANDS = {"exit": lambda: exit(), "regenerate": lambda: generate()}
 
+
+def run():
+    generate()
+    print()
+
+    while True:
+        command = input(": ")
+        command, *args = re.sub(r"\s+", " ", command.strip()).split(" ")
+
+        if command in COMMANDS:
+            COMMANDS[command]()
+            print()
+
+
+def generate():
     inputs = get_inputs()
     segments, start_segments, end_segments = generate_segments(inputs)
     segment_map = generate_segment_map(segments)
