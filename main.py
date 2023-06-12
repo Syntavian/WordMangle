@@ -6,11 +6,17 @@ RESULT_MIN_LENGTH = 7
 RESULT_MAX_LENGTH = 9
 
 
-COMMANDS = {"exit": lambda: exit(), "regenerate": lambda: generate()}
+COMMANDS = {
+    "add": lambda *args: add_words(*args),
+    "exit": lambda *_: exit(),
+    "regenerate": lambda *args: generate(*args),
+}
 
 
 def run():
-    generate()
+    inputs = get_inputs()
+
+    generate(inputs)
     print()
 
     while True:
@@ -18,21 +24,29 @@ def run():
         command, *args = re.sub(r"\s+", " ", command.strip()).split(" ")
 
         if command in COMMANDS:
-            COMMANDS[command]()
+            COMMANDS[command](inputs, *args)
             print()
 
 
-def generate():
-    inputs = get_inputs()
-    segments, start_segments, end_segments = generate_segments(inputs)
+def add_words(_inputs: list[str], *_args):
+    _inputs.extend([word for word in _args if word not in _inputs])
+
+    with open("inputs.txt", "w") as inputs_file:
+        inputs_file.writelines([f"{word}\n" for word in sorted(_inputs)])
+
+    generate(_inputs)
+
+
+def generate(_inputs):
+    segments, start_segments, end_segments = generate_segments(_inputs)
     segment_map = generate_segment_map(segments)
-    results = generate_results(inputs, start_segments, end_segments, segment_map)
+    results = generate_results(_inputs, start_segments, end_segments, segment_map)
 
     write_outputs(results)
 
 
-def write_outputs(results):
-    sorted_results = sorted(results)
+def write_outputs(_results):
+    sorted_results = sorted(_results)
 
     print()
 
