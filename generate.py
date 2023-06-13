@@ -1,3 +1,5 @@
+import os
+
 from config import *
 
 
@@ -5,12 +7,24 @@ def generate(_inputs=[]):
     segments, start_segments, end_segments = generate_segments(_inputs)
     segment_map = generate_segment_map(segments)
     results = generate_results(_inputs, start_segments, end_segments, segment_map)
-    sorted_results = sorted(results)
 
-    print_outputs(sorted_results)
-    write_outputs(sorted_results)
+    if len(results):
+        sorted_results = sorted(results)
+
+        print_outputs(sorted_results)
+        write_outputs(sorted_results)
 
 
+def print_wrap(func):
+    def wrapper(*args):
+        print()
+        func(*args)
+        print()
+
+    return wrapper
+
+
+@print_wrap
 def print_outputs(_results):
     print()
 
@@ -20,6 +34,11 @@ def print_outputs(_results):
     print()
 
 
+@print_wrap
+def print_error(_error_message):
+    print(f"Error: {_error_message}")
+
+
 def write_outputs(_results=[]):
     with open(OUTPUT_FILE_NAME, "w") as outputs_file:
         outputs_file.writelines([f"{word}\n" for word in _results])
@@ -27,6 +46,15 @@ def write_outputs(_results=[]):
 
 def get_inputs():
     inputs = set()
+
+    if not os.path.isfile(INPUT_FILE_NAME):
+        current_directory = os.path.abspath(os.path.curdir)
+
+        print_error(
+            f"Inputs file is missing, is the working directory {current_directory} correct?"
+        )
+
+        return inputs
 
     with open(INPUT_FILE_NAME) as inputs_file:
         file_lines = inputs_file.readlines()
