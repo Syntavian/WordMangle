@@ -5,8 +5,9 @@ from generate import *
 COMMANDS = {
     "add": lambda *args: add_words(*args),
     "exit": lambda *_: exit(),
-    "regenerate": lambda *args: generate(*args),
+    "regenerate": lambda *args: generate(args[0]),
     "remove": lambda *args: remove_words(*args),
+    "reset": lambda *_: reset(),
 }
 
 
@@ -37,7 +38,12 @@ def remove_words(_inputs: set[str], *_args):
     generate(_inputs)
 
 
-def write_inputs(_inputs):
+def reset():
+    write_inputs()
+    write_outputs()
+
+
+def write_inputs(_inputs=[]):
     with open(INPUT_FILE_NAME, "w") as inputs_file:
         inputs_file.writelines([f"{word}\n" for word in sorted(_inputs)])
 

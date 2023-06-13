@@ -1,26 +1,28 @@
 from config import *
 
 
-def generate(_inputs):
+def generate(_inputs=[]):
     segments, start_segments, end_segments = generate_segments(_inputs)
     segment_map = generate_segment_map(segments)
     results = generate_results(_inputs, start_segments, end_segments, segment_map)
+    sorted_results = sorted(results)
 
-    write_outputs(results)
+    print_outputs(sorted_results)
+    write_outputs(sorted_results)
 
 
-def write_outputs(_results):
-    sorted_results = sorted(_results)
+def print_outputs(_results):
+    print()
+
+    for i in range(0, len(_results), 5):
+        print(*_results[i : i + 5])
 
     print()
 
-    for i in range(0, len(sorted_results), 5):
-        print(*sorted_results[i : i + 5])
 
-    print()
-
+def write_outputs(_results=[]):
     with open(OUTPUT_FILE_NAME, "w") as outputs_file:
-        outputs_file.writelines([f"{word}\n" for word in sorted_results])
+        outputs_file.writelines([f"{word}\n" for word in _results])
 
 
 def get_inputs():
