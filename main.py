@@ -7,7 +7,7 @@ COMMANDS = {
     "exit": lambda *_: exit(),
     "regenerate": lambda *args: generate(args[0]),
     "remove": lambda *args: remove_words(*args),
-    "reset": lambda *_: reset(),
+    "reset": lambda *args: reset(args[0]),
 }
 
 
@@ -38,7 +38,9 @@ def remove_words(_inputs: set[str], *_args):
     generate(_inputs)
 
 
-def reset():
+def reset(_inputs: set[str]):
+    _inputs.clear()
+
     write_inputs()
     write_outputs()
 
