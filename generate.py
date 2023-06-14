@@ -1,6 +1,7 @@
 import os
 
 from config import *
+from console import *
 
 
 def generate(_inputs=[]):
@@ -13,30 +14,6 @@ def generate(_inputs=[]):
 
         print_outputs(sorted_results)
         write_outputs(sorted_results)
-
-
-def print_wrap(func):
-    def wrapper(*args):
-        print()
-        func(*args)
-        print()
-
-    return wrapper
-
-
-@print_wrap
-def print_outputs(_results):
-    print()
-
-    for i in range(0, len(_results), 5):
-        print(*_results[i : i + 5])
-
-    print()
-
-
-@print_wrap
-def print_error(_error_message):
-    print(f"Error: {_error_message}")
 
 
 def write_outputs(_results=[]):
