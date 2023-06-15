@@ -4,7 +4,7 @@ from config import *
 from console import *
 
 
-def generate(_state):
+def generate(_state: dict[str, set[str]]):
     inputs = _state["inputs"]
     include = _state["include"]
     segments, start_segments, end_segments = generate_segments(inputs)
@@ -23,7 +23,7 @@ def generate(_state):
         write_outputs(sorted_results)
 
 
-def write_outputs(_results=[]):
+def write_outputs(_results: list[str] = []):
     with open(OUTPUT_FILE_NAME, "w") as outputs_file:
         outputs_file.writelines([f"{word}\n" for word in _results])
 
@@ -52,9 +52,14 @@ def get_inputs():
     return inputs
 
 
-def generate_results(_inputs, _start_segments, _end_segments, _segment_map):
+def generate_results(
+    _inputs: set[str],
+    _start_segments: set[str],
+    _end_segments: set[str],
+    _segment_map: dict[str, set[str]],
+):
     working_queue = list(_start_segments)
-    results = set()
+    results: set[str] = set()
 
     while len(working_queue):
         working_item = working_queue.pop(0)
@@ -77,22 +82,22 @@ def generate_results(_inputs, _start_segments, _end_segments, _segment_map):
     return results
 
 
-def generate_segment_map(_segments):
-    segment_map: dict[str, list[str]] = {}
+def generate_segment_map(_segments: set[str]):
+    segment_map: dict[str, set[str]] = {}
 
     for segment in _segments:
         if segment[:OVERLAP_LENGTH] in segment_map:
-            segment_map[segment[:OVERLAP_LENGTH]].append(segment)
+            segment_map[segment[:OVERLAP_LENGTH]].add(segment)
         else:
-            segment_map[segment[:OVERLAP_LENGTH]] = [segment]
+            segment_map[segment[:OVERLAP_LENGTH]] = set([segment])
 
     return segment_map
 
 
-def generate_segments(_inputs):
-    segments = set()
-    start_segments = set()
-    end_segments = set()
+def generate_segments(_inputs: set[str]):
+    segments: set[str] = set()
+    start_segments: set[str] = set()
+    end_segments: set[str] = set()
 
     for word in _inputs:
         for character_index in range(len(word)):

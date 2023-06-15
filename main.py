@@ -28,21 +28,21 @@ def run():
             COMMANDS[command](state, *args)
 
 
-def add_words(_state, *_args):
+def add_words(_state: dict[str, set[str]], *_args: str):
     _state["inputs"].update(_args)
 
     write_inputs(_state["inputs"])
     generate(_state)
 
 
-def remove_words(_state, *_args):
+def remove_words(_state: dict[str, set[str]], *_args: str):
     _state["inputs"].difference_update(_args)
 
     write_inputs(_state["inputs"])
     generate(_state)
 
 
-def reset(_state):
+def reset(_state: dict[str, set[str]]):
     _state["inputs"].clear()
     _state["include"].clear()
 
@@ -50,7 +50,7 @@ def reset(_state):
     write_outputs()
 
 
-def include(_state, *_args):
+def include(_state: dict[str, set[str]], *_args: str):
     if len(_args) and _args[0] == "*":
         _state["include"].clear()
     else:
@@ -59,7 +59,7 @@ def include(_state, *_args):
     generate(_state)
 
 
-def write_inputs(_inputs=[]):
+def write_inputs(_inputs: set[str] = set()):
     with open(INPUT_FILE_NAME, "w") as inputs_file:
         inputs_file.writelines([f"{word}\n" for word in sorted(_inputs)])
 

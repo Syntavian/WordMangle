@@ -8,7 +8,7 @@ def print_wrap(func):
 
 
 @print_wrap
-def print_outputs(_results):
+def print_outputs(_results: list[str]):
     print()
 
     for i in range(0, len(_results), 5):
@@ -18,5 +18,5 @@ def print_outputs(_results):
 
 
 @print_wrap
-def print_error(_error_message):
+def print_error(_error_message: str):
     print(f"Error: {_error_message}")
