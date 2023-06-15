@@ -5,6 +5,7 @@ from generate import *
 COMMANDS = {
     "add": lambda *args: add_words(*args),
     "exit": lambda *_: exit(),
+    "include": lambda *args: include(*args),
     "regenerate": lambda *args: generate(args[0]),
     "remove": lambda *args: remove_words(*args),
     "reset": lambda *args: reset(args[0]),
@@ -12,37 +13,50 @@ COMMANDS = {
 
 
 def run():
-    inputs = get_inputs()
+    state = {
+        "inputs": get_inputs(),
+        "include": set(),
+    }
 
-    generate(inputs)
+    generate(state)
 
     while True:
         command = input(": ")
         command, *args = re.sub(r"\s+", " ", command.strip()).split(" ")
 
         if command in COMMANDS:
-            COMMANDS[command](inputs, *args)
+            COMMANDS[command](state, *args)
 
 
-def add_words(_inputs: set[str], *_args):
-    _inputs.update(_args)
+def add_words(_state, *_args):
+    _state["inputs"].update(_args)
 
-    write_inputs(_inputs)
-    generate(_inputs)
-
-
-def remove_words(_inputs: set[str], *_args):
-    _inputs.difference_update(_args)
-
-    write_inputs(_inputs)
-    generate(_inputs)
+    write_inputs(_state["inputs"])
+    generate(_state)
 
 
-def reset(_inputs: set[str]):
-    _inputs.clear()
+def remove_words(_state, *_args):
+    _state["inputs"].difference_update(_args)
+
+    write_inputs(_state["inputs"])
+    generate(_state)
+
+
+def reset(_state):
+    _state["inputs"].clear()
+    _state["include"].clear()
 
     write_inputs()
     write_outputs()
+
+
+def include(_state, *_args):
+    if len(_args) and _args[0] == "*":
+        _state["include"].clear()
+    else:
+        _state["include"].update(_args)
+
+    generate(_state)
 
 
 def write_inputs(_inputs=[]):

@@ -4,10 +4,17 @@ from config import *
 from console import *
 
 
-def generate(_inputs=[]):
-    segments, start_segments, end_segments = generate_segments(_inputs)
+def generate(_state):
+    inputs = _state["inputs"]
+    include = _state["include"]
+    segments, start_segments, end_segments = generate_segments(inputs)
     segment_map = generate_segment_map(segments)
-    results = generate_results(_inputs, start_segments, end_segments, segment_map)
+    results = generate_results(inputs, start_segments, end_segments, segment_map)
+
+    if len(include):
+        results = set(
+            [word for word in results if any([partial in word for partial in include])]
+        )
 
     if len(results):
         sorted_results = sorted(results)
@@ -107,6 +114,6 @@ def generate_segments(_inputs):
 
 
 if __name__ == "__main__":
-    inputs = get_inputs()
+    state = {"inputs": get_inputs(), "include": set()}
 
-    generate(inputs)
+    generate(state)
