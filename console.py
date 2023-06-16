@@ -1,8 +1,9 @@
 def print_wrap(func):
     def wrapper(*args):
         print()
-        func(*args)
+        result = func(*args)
         print()
+        return result
 
     return wrapper
 

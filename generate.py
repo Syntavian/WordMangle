@@ -7,6 +7,7 @@ from console import *
 def generate(_state: dict[str, set[str]]):
     inputs = _state["inputs"]
     include = _state["include"]
+    exclude = _state["exclude"]
     segments, start_segments, end_segments = generate_segments(inputs)
     segment_map = generate_segment_map(segments)
     results = generate_results(inputs, start_segments, end_segments, segment_map)
@@ -14,6 +15,15 @@ def generate(_state: dict[str, set[str]]):
     if len(include):
         results = set(
             [word for word in results if any([partial in word for partial in include])]
+        )
+
+    if len(exclude):
+        results = set(
+            [
+                word
+                for word in results
+                if not any([partial in word for partial in exclude])
+            ]
         )
 
     if len(results):
@@ -29,7 +39,7 @@ def write_outputs(_results: list[str] = []):
 
 
 def get_inputs():
-    inputs = set()
+    inputs: set[str] = set()
 
     if not os.path.isfile(INPUT_FILE_NAME):
         current_directory = os.path.abspath(os.path.curdir)
@@ -119,6 +129,10 @@ def generate_segments(_inputs: set[str]):
 
 
 if __name__ == "__main__":
-    state = {"inputs": get_inputs(), "include": set()}
+    state: dict[str, set[str]] = {
+        "inputs": get_inputs(),
+        "include": set(),
+        "exclude": set(),
+    }
 
     generate(state)

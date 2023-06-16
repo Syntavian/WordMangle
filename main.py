@@ -4,6 +4,7 @@ from generate import *
 
 COMMANDS = {
     "add": lambda *args: add_words(*args),
+    "exclude": lambda *args: exclude(*args),
     "exit": lambda *_: exit(),
     "include": lambda *args: include(*args),
     "regenerate": lambda *args: generate(args[0]),
@@ -13,9 +14,10 @@ COMMANDS = {
 
 
 def run():
-    state = {
+    state: dict[str, set[str]] = {
         "inputs": get_inputs(),
         "include": set(),
+        "exclude": set(),
     }
 
     generate(state)
@@ -55,6 +57,15 @@ def include(_state: dict[str, set[str]], *_args: str):
         _state["include"].clear()
     else:
         _state["include"].update(_args)
+
+    generate(_state)
+
+
+def exclude(_state: dict[str, set[str]], *_args: str):
+    if len(_args) and _args[0] == "*":
+        _state["exclude"].clear()
+    else:
+        _state["exclude"].update(_args)
 
     generate(_state)
 
